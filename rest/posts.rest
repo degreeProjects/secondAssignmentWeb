@@ -1,0 +1,35 @@
+### Create Post
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "description": "My first post",
+  "location": "Tel Aviv",
+  "sender": "6548b9f1a2c3d4e567890123"
+}
+
+###
+# Get All Posts
+GET http://localhost:3000/posts
+
+###
+# Get Post By ID
+GET http://localhost:3000/posts/6929e369ffb1b0ca1c0ec615
+
+###
+# Get Posts By SenderId
+GET http://localhost:3000/posts/sender?senderId=6548b9f1a2c3d4e567890123
+
+###
+# Update Post
+PUT http://localhost:3000/posts/6929e369ffb1b0ca1c0ec615
+Content-Type: application/json
+
+{
+  "description": "Updated description",
+  "location": "Jerusalem"
+}
+
+###
+# Delete Post
+DELETE http://localhost:3000/posts/6929fde74ba96cc56ebb86e2

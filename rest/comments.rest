@@ -1,0 +1,44 @@
+### Create a new comment
+POST http://localhost:3000/comments
+Content-Type: application/json
+
+{
+  "content": "This is a test comment",
+  "post": "6929e369ffb1b0ca1c0ec615",
+  "sender": "6548b9f1a2c3d4e567890123"
+}
+
+###
+
+### Get all comments
+GET http://localhost:3000/comments
+
+###
+
+### Get a comment by ID
+GET http://localhost:3000/comments/6929e40bffb1b0ca1c0ec61d
+
+###
+
+### Get comments by postId
+GET http://localhost:3000/comments/post/6929e369ffb1b0ca1c0ec615
+
+###
+
+### Get all comments by senderId
+GET http://localhost:3000/comments/sender/6548b9f1a2c3d4e567890123
+
+###
+
+### Update a comment
+PUT http://localhost:3000/comments/6929e40bffb1b0ca1c0ec61d
+Content-Type: application/json
+
+{
+  "content": "Updated comment content"
+}
+
+###
+
+### Delete a comment
+DELETE http://localhost:3000/comments/6929e52affb1b0ca1c0ec623
