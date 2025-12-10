@@ -19,7 +19,7 @@ export class PostController {
         location,
         sender: new Types.ObjectId(sender),
       });
-      res.status(200).json(post);
+      res.status(201).json(post);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to create post" });

@@ -21,21 +21,25 @@
   },
   "homepage": "https://github.com/degreeProjects/secondAssignmentWeb#readme",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "env-var": "^7.5.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.0"
   }
 }

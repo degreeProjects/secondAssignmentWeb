@@ -21,7 +21,7 @@ export class CommentController {
         sender: new Types.ObjectId(sender),
       });
 
-      res.status(200).json(comment);
+      res.status(201).json(comment);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to create comment" });
