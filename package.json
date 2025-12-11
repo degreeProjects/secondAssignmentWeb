@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "coverage": "tsc && jest --detectOpenHandles --coverage --runInBand --forceExit",
+    "test": "tsc && jest --detectOpenHandles --runInBand --forceExit",
     "start": "tsc && node ./dist/server.js",
+    "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./tests/auth.test.ts",
     "build": "tsc"
   },
   "repository": {
