@@ -39,7 +39,6 @@ export class PostController {
   async getById(req: Request, res: Response) {
     try {
       const post = await postRepository.getById(req.params.id);
-      if (!post) return res.status(404).json({ error: "Post not found" });
       res.status(200).json(post);
     } catch (err) {
       console.error(err);
@@ -64,8 +63,6 @@ export class PostController {
   async update(req: Request, res: Response) {
     try {
       const updatedPost = await postRepository.update(req.params.id, req.body);
-      if (!updatedPost)
-        return res.status(404).json({ error: "Post not found" });
       res.status(200).json(updatedPost);
     } catch (err) {
       console.error(err);
@@ -76,9 +73,7 @@ export class PostController {
   async delete(req: Request, res: Response) {
     try {
       const deletedPost = await postRepository.delete(req.params.id);
-      if (!deletedPost)
-        return res.status(404).json({ error: "Post not found" });
-      res.status(200).json({ message: "Post deleted successfully" });
+      res.status(200).json(deletedPost);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to delete post" });
