@@ -41,7 +41,6 @@ export class CommentController {
   async getById(req: Request, res: Response) {
     try {
       const comment = await commentRepository.getById(req.params.id);
-      if (!comment) return res.status(404).json({ error: "Comment not found" });
       res.status(200).json(comment);
     } catch (err) {
       console.error(err);
@@ -75,8 +74,6 @@ export class CommentController {
         req.params.id,
         req.body
       );
-      if (!updatedComment)
-        return res.status(404).json({ error: "Comment not found" });
       res.status(200).json(updatedComment);
     } catch (err) {
       console.error(err);
@@ -87,9 +84,7 @@ export class CommentController {
   async delete(req: Request, res: Response) {
     try {
       const deletedComment = await commentRepository.delete(req.params.id);
-      if (!deletedComment)
-        return res.status(404).json({ error: "Comment not found" });
-      res.status(200).json({ message: "Comment deleted successfully" });
+      res.status(200).json(deletedComment);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to delete comment" });
