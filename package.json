@@ -10,6 +10,7 @@
     "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./tests/auth.test.ts",
     "testComments": "tsc && jest --detectOpenHandles --forceExit --runInBand ./tests/comment.test.ts",
     "testPosts": "tsc && jest --detectOpenHandles --forceExit --runInBand ./tests/post.test.ts",
+    "testMongo": "tsc && jest --detectOpenHandles --forceExit --runInBand ./tests/mongo.test.ts",
     "build": "tsc"
   },
   "repository": {
