@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { Express } from "express";
 import { initApp } from "../app";
 import { UserModel } from "../models/userModel";
+import { UserRepository } from "../repositories/userRepository";
 
 let app: Express;
 
@@ -23,6 +24,7 @@ const user: IUserPayload = {
 beforeAll(async () => {
   app = await initApp();
   await UserModel.deleteMany({ email: user.email });
+  await UserModel.deleteMany({ email: `${user.email}1` });
 });
 
 afterAll(async () => {
@@ -49,6 +51,22 @@ describe("Auth tests", () => {
       .post("/auth/register")
       .send({ email: user.email });
     expect(response.statusCode).toBe(400);
+  });
+
+  test("Test Register unexpected error", async () => {
+    jest
+      .spyOn(UserRepository.prototype, "create")
+      .mockRejectedValueOnce(new Error("DB error"));
+
+    const response = await request(app)
+      .post("/auth/register")
+      .send({
+        email: `${user.email}1`,
+        password: user.password,
+        username: user.username,
+      });
+
+    expect(response.statusCode).toBe(500);
   });
 
   test("Test Login", async () => {
@@ -82,6 +100,19 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(401);
   });
 
+  test("Test Login unexpected error", async () => {
+    jest
+      .spyOn(UserRepository.prototype, "getByEmail")
+      .mockRejectedValueOnce(new Error("DB error"));
+
+    const response = await request(app).post("/auth/login").send({
+      email: user.email,
+      password: user.password,
+    });
+
+    expect(response.statusCode).toBe(500);
+  });
+
   test("Test refresh token", async () => {
     const response = await request(app)
       .get("/auth/refresh")
@@ -98,7 +129,7 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(401);
   });
 
-  test("Test refresh token with invalid refresh token", async () => {
+  test("Test refresh token with expired refresh token", async () => {
     const response = await request(app)
       .get("/auth/refresh")
       .set(
@@ -107,6 +138,30 @@ describe("Auth tests", () => {
       )
       .send();
     expect(response.statusCode).toBe(401);
+  });
+
+  test("Test refresh token with invalid refresh token", async () => {
+    const response = await request(app)
+      .get("/auth/refresh")
+      .set(
+        "Authorization",
+        "Bearer eyJhbGciOiJAUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTNhYzNjNzI5ZDhjMWY4ZjFlYTBkNWYiLCJpYXQiOjE3NjU0NTg4ODh9.hMV3EVn0Z-cSdBWLofueWGLNwH1sZ47jpopyPUY3ClM"
+      )
+      .send();
+    expect(response.statusCode).toBe(401);
+  });
+
+  test("Test Refresh unexpected error", async () => {
+    jest
+      .spyOn(UserRepository.prototype, "getById")
+      .mockRejectedValueOnce(new Error("DB error"));
+
+    const response = await request(app)
+      .get("/auth/refresh")
+      .set("Authorization", "Bearer " + refreshToken)
+      .send();
+
+    expect(response.statusCode).toBe(500);
   });
 
   test("Test Logout", async () => {
@@ -124,6 +179,11 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(401);
   });
 
+  test("Test Logout without refresh token", async () => {
+    const response = await request(app).get("/auth/logout");
+    expect(response.statusCode).toBe(401);
+  });
+
   test("Test Logout with invalid refresh token", async () => {
     const response = await request(app)
       .get("/auth/logout")
@@ -132,5 +192,19 @@ describe("Auth tests", () => {
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTNhYzNjNzI5ZDhjMWY4ZjFlYTBkNWYiLCJpYXQiOjE3NjU0NTg4ODh9.hMV3EVn0Z-cSdBWLofueWGLNwH1sZ47jpopyPUY3ClM"
       );
     expect(response.statusCode).toBe(401);
+  });
+
+  test("Test Logout unexpected error", async () => {
+    const loginRes = await request(app).post("/auth/login").send(user);
+
+    jest
+      .spyOn(UserRepository.prototype, "getById")
+      .mockRejectedValueOnce(new Error("DB error"));
+
+    const response = await request(app)
+      .get("/auth/logout")
+      .set("Authorization", "Bearer " + loginRes.body.refreshToken);
+
+    expect(response.statusCode).toBe(500);
   });
 });
