@@ -9,7 +9,7 @@ jest.mock("../config/logger", () => ({
 }));
 
 describe("MongoDB connection tests", () => {
-  test("Should fail to connect to MongoDB", async () => {
+  test("Fail to connect to MongoDB", async () => {
     jest.spyOn(mongoose, "connect").mockImplementationOnce(() => {
       throw new Error("Mongo connection failed");
     });
