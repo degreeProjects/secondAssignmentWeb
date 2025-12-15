@@ -22,6 +22,7 @@ const postSchema = new mongoose.Schema<IPost>(
 
     sender: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },

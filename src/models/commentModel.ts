@@ -20,6 +20,7 @@ const commentSchema = new mongoose.Schema<IComment>(
     },
     sender: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },

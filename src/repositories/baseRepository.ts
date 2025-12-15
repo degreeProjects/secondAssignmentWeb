@@ -20,12 +20,6 @@ export class BaseRepository<ModelType extends Document> {
     return await this.model.findById(id);
   }
 
-  async getBySender(
-    senderId: string | Types.ObjectId
-  ): Promise<ModelType[] | null> {
-    return await this.model.find({ sender: senderId });
-  }
-
   async update(
     id: string | Types.ObjectId,
     data: Partial<ModelType>

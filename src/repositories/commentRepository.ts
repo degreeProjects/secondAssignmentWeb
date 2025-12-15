@@ -10,4 +10,10 @@ export class CommentRepository extends BaseRepository<IComment> {
   async getByPost(postId: string | Types.ObjectId): Promise<IComment[] | null> {
     return await this.model.find({ post: postId });
   }
+
+  async getBySender(
+    senderId: string | Types.ObjectId
+  ): Promise<IComment[] | null> {
+    return await this.model.find({ sender: senderId });
+  }
 }

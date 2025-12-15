@@ -11,14 +11,20 @@ const userSchema = new mongoose.Schema<IUser>({
   email: {
     type: String,
     required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
   },
   password: {
     type: String,
     required: true,
+    trim: true,
   },
   username: {
     type: String,
     required: true,
+    unique: true,
+    trim: true,
   },
   refreshTokens: {
     type: [String],
@@ -26,4 +32,4 @@ const userSchema = new mongoose.Schema<IUser>({
   },
 });
 
-export default mongoose.model<IUser>("User", userSchema);
+export const UserModel = mongoose.model<IUser>("User", userSchema);
