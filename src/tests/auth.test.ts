@@ -6,6 +6,9 @@ import { Express } from "express";
 import { initApp } from "../app";
 import { UserModel } from "../models/userModel";
 import { UserRepository } from "../repositories/userRepository";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import config from "../env.config";
 
 let app: Express;
 
@@ -113,6 +116,30 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(500);
   });
 
+  test("Test Login initializes refreshTokens when undefined", async () => {
+    const mockUser: any = {
+      _id: new mongoose.Types.ObjectId(),
+      email: user.email,
+      password: "hashedPassword",
+      save: jest.fn().mockResolvedValue(undefined),
+    };
+
+    jest
+      .spyOn(UserRepository.prototype, "getByEmail")
+      .mockResolvedValueOnce(mockUser);
+
+    jest.spyOn(bcrypt, "compare").mockImplementationOnce(async () => true);
+
+    const response = await request(app).post("/auth/login").send({
+      email: user.email,
+      password: user.password,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(mockUser.refreshTokens)).toBe(true);
+    expect(mockUser.refreshTokens.length).toBe(1);
+  });
+
   test("Test refresh token", async () => {
     const response = await request(app)
       .get("/auth/refresh")
@@ -162,6 +189,62 @@ describe("Auth tests", () => {
       .send();
 
     expect(response.statusCode).toBe(500);
+  });
+
+  test("Test Refresh with unrecognized refresh token in user refreshTokens", async () => {
+    const userId = new mongoose.Types.ObjectId().toString();
+    const refreshTokenUnderTest = jwt.sign(
+      { _id: userId },
+      config.jwtRefreshSecret
+    );
+
+    const mockUser: any = {
+      _id: userId,
+      email: "refresh@test.com",
+      password: "hashed",
+      refreshTokens: [], // does NOT contain the provided token
+      save: jest.fn().mockResolvedValue(undefined),
+    };
+
+    jest
+      .spyOn(UserRepository.prototype, "getById")
+      .mockResolvedValueOnce(mockUser);
+
+    const response = await request(app)
+      .get("/auth/refresh")
+      .set("Authorization", "Bearer " + refreshTokenUnderTest);
+
+    expect(response.statusCode).toBe(401);
+    expect(mockUser.refreshTokens).toEqual([]);
+    expect(mockUser.save).toHaveBeenCalled();
+  });
+
+  test("Test Logout with unrecognized refresh token in user refreshTokens", async () => {
+    const userId = new mongoose.Types.ObjectId().toString();
+    const refreshTokenUnderTest = jwt.sign(
+      { _id: userId },
+      config.jwtRefreshSecret
+    );
+
+    const mockUser: any = {
+      _id: userId,
+      email: "logout@test.com",
+      password: "hashed",
+      refreshTokens: [], // does NOT contain the provided token
+      save: jest.fn().mockResolvedValue(undefined),
+    };
+
+    jest
+      .spyOn(UserRepository.prototype, "getById")
+      .mockResolvedValueOnce(mockUser);
+
+    const response = await request(app)
+      .get("/auth/logout")
+      .set("Authorization", "Bearer " + refreshTokenUnderTest);
+
+    expect(response.statusCode).toBe(401);
+    expect(mockUser.refreshTokens).toEqual([]);
+    expect(mockUser.save).toHaveBeenCalled();
   });
 
   test("Test Logout", async () => {

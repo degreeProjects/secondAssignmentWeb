@@ -35,16 +35,6 @@ export class UserController {
     }
   }
 
-  async getByUsername(req: Request, res: Response) {
-    try {
-      const user = await userRepository.getByUsername(req.params.username);
-      res.status(200).json(user);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Failed to get user by username" });
-    }
-  }
-
   async update(req: Request, res: Response) {
     try {
       const updatedUser = await userRepository.update(req.params.id, req.body);
